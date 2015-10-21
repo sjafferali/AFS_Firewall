@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Usage: bash <(GET s.codedby.me/firewall/afs_installer)
+# Usage: bash <(curl -sk s.codedby.me/firewall/afs_installer)
 # Installer by: Samir J.
 #
 #
@@ -16,7 +16,7 @@ bfd_path="http://s.codedby.me/bfd/bfd.tar.gz"
 echo
 echo MyEZinstaller for:
 echo "Awesome Firewall Script (AFS xD)"
-echo "Repo: http://git.splodycode.net"
+echo "Repo: https://github.com/sjafferali/AFS_Firewall"
 echo
 echo
 echo -ne "[*] Checking for conflicting files... "
