@@ -27,7 +27,7 @@ then
 	bak_dir="/etc/firewall_"`date +"%Y-%m-%d-%T"`
 	echo -ne "[*] Removing firewall... "
 	mv /etc/firewall $bak_dir
-	rm -f /etc/init.d/firewall
+	mv  /etc/init.d/firewall $bak_dir/firewall.init
 	mv /usr/lib/systemd/system/firewall.service $bak_dir
 	systemctl daemon-reload
         rm -f /usr/sbin/firewall
