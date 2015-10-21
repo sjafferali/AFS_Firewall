@@ -1,0 +1,9 @@
+function systemdorinit ()
+{
+	if [[ -f /bin/systemctl ]]
+	then
+		/bin/systemctl $1 firewall
+	else
+		$firewallinit $1
+	fi
+}
