@@ -56,7 +56,8 @@ then
 	mv /root/afs_firewall/firewall.service /usr/lib/systemd/system/firewall.service
 	systemctl daemon-reload
 	systemctl stop firewalld
-	systemctl mask firewalld
+	systemctl mask firewalld &> /dev/null
+	yum install iptables-services -y &> /dev/null
 else
 	ln -s /etc/firewall/config/system/firewall.init /etc/init.d/firewall
 fi
