@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Usage: bash <(curl -sk s.codedby.me/firewall/afs_installer)
+# Usage: bash <(curl -sk https://raw.githubusercontent.com/sjafferali/AFS_Firewall/master/afs_installer)
 # Installer by: Samir J.
 #
 #
