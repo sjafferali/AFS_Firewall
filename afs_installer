@@ -9,7 +9,7 @@
 #
 
 ## CONFIG
-afs_path="http://s.codedby.me/firewall/afs_firewall.tar.gz"
+AFS_REPO="https://github.com/sjafferali/AFS_Firewall.git"
 bfd_path="http://s.codedby.me/bfd/bfd.tar.gz"
 ## CONFIG
 
@@ -19,13 +19,17 @@ echo "Awesome Firewall Script (AFS xD)"
 echo "Repo: https://github.com/sjafferali/AFS_Firewall"
 echo
 echo
+yum install git -y
 echo -ne "[*] Checking for conflicting files... "
 if [[ -d /etc/firewall ]]
 then
 	echo /etc/firewall found...
 	bak_dir="/etc/firewall_"`date +"%Y-%m-%d-%T"`
-        mv /etc/firewall $bak_dir
-        mv /etc/init.d/firewall $bak_dir/firewall_init
+	echo -ne "[*] Removing firewall... "
+	mv /etc/firewall $bak_dir
+	rm -f /etc/init.d/firewall
+	mv /usr/lib/systemd/system/firewall.service $bak_dir
+	systemctl daemon-reload
         rm -f /usr/sbin/firewall
         echo "[*] Backup: $bak_dir"
 else
@@ -33,18 +37,14 @@ else
 fi
 echo -ne "[*] Downloading... "
 cd /root
-wget $afs_path &> /dev/null
-echo Done
-
-echo -ne "[*] Untarring... "
-tar -xzf /root/afs_firewall.tar.gz
+git clone $REPO
 echo Done
 
 echo -ne "[*] Installing configuration files... "
-mv /root/afs_firewall/firewall /etc
+mv /root/AFS_Firewall/firewall /etc
 if [[ ! -d /etc/.firewall ]]
 then
-	mv /root/afs_firewall/.firewall /etc
+	mv /root/AFS_Firewall/.firewall /etc
 fi
 mkdir -p /var/log/firewall
 echo Done
@@ -77,8 +77,7 @@ ln -s /etc/.firewall/bruted /etc/firewall/bruted
 echo Done
 
 echo -ne "[*] Removing temporary files... "
-rm -fr /root/afs_firewall
-rm -f /root/afs_firewall.tar.gz
+rm -fr /root/AFS_Firewall
 echo Done
 
 echo
