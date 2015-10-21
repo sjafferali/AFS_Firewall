@@ -21,36 +21,32 @@ echo
 echo
 echo "[*] Installing git"
 yum install git -y | sed "s/^/\t/"
-echo -ne "[*] Checking for conflicting files... "
+echo -e "[*] Checking for conflicting files... "
 if [[ -d /etc/firewall ]]
 then
 	echo /etc/firewall found...
 	bak_dir="/etc/firewall_"`date +"%Y-%m-%d-%T"`
-	echo -ne "[*] Removing firewall... "
+	echo -e "[*] Removing firewall... "
 	mv -v /etc/firewall $bak_dir | sed "s/^/\t/"
 	mv  -v /etc/init.d/firewall $bak_dir/firewall.init | sed "s/^/\t/"
 	mv -v /usr/lib/systemd/system/firewall.service $bak_dir | sed "s/^/\t/"
 	systemctl daemon-reload | sed "s/^/\t/"
         rm -fv /usr/sbin/firewall | sed "s/^/\t/"
         echo "[*] Backup: $bak_dir"
-else
-	echo Done
 fi
-echo -ne "[*] Downloading... "
+echo -e "[*] Downloading... "
 cd /root
-git clone $AFS_REPO | sed "s/^/\t/"
-echo Done
+git clone $AFS_REPO
 
-echo -ne "[*] Installing configuration files... "
+echo -e "[*] Installing configuration files... "
 mv -v /root/AFS_Firewall/firewall /etc | sed "s/^/\t/"
 if [[ ! -d /etc/.firewall ]]
 then
 	mv -v /root/AFS_Firewall/.firewall /etc | sed "s/^/\t/"
 fi
 mkdir -pv /var/log/firewall | sed "s/^/\t/"
-echo Done
 
-echo -ne "[*] Setting up init/systemd script... " 
+echo -e "[*] Setting up init/systemd script... " 
 chmod -v u+x /etc/firewall/config/system/firewall.init | sed "s/^/\t/"
 if [[ -f /bin/systemctl ]]
 then
@@ -59,13 +55,12 @@ then
 	systemctl enable firewall | sed "s/^/\t/"
 	systemctl stop firewalld | sed "s/^/\t/"
 	systemctl mask firewalld | sed "s/^/\t/"
-	yum install iptables-services -y
+	yum install iptables-services -y | sed "s/^/\t/"
 else
 	ln -s /etc/firewall/config/system/firewall.init /etc/init.d/firewall | sed "s/^/\t/"
 fi
-echo Done
 
-echo -ne "[*] Creating symlinks... "
+echo -e "[*] Creating symlinks... "
 ln -s /etc/firewall/firewall /usr/sbin/firewall | sed "s/^/\t/"
 ln -s /etc/.firewall/modules/includes /etc/firewall/includes | sed "s/^/\t/"
 ln -s /etc/.firewall/port-limit /etc/firewall/port-limit | sed "s/^/\t/"
@@ -75,10 +70,9 @@ ln -s /etc/.firewall/send-to-devnull /etc/firewall/send-to-devnull | sed "s/^/\t
 ln -s /etc/.firewall/smtp-users /etc/firewall/smtp-users | sed "s/^/\t/"
 ln -s /etc/.firewall/whitelist /etc/firewall/whitelist | sed "s/^/\t/"
 ln -s /etc/.firewall/bruted /etc/firewall/bruted | sed "s/^/\t/"
-echo Done
 
 echo -ne "[*] Removing temporary files... "
-rm -frv /root/AFS_Firewall | sed "s/^/\t/"
+rm -fr /root/AFS_Firewall
 echo Done
 
 echo
