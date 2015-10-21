@@ -1,0 +1,129 @@
+#!/bin/bash
+#
+# Usage: bash <(GET s.codedby.me/firewall/afs_installer)
+# Installer by: Samir J.
+#
+#
+# MyEZinstaller for: 
+# Awesome Firewall Script (AFS xD)
+#
+
+## CONFIG
+afs_path="http://s.codedby.me/firewall/afs_firewall.tar.gz"
+bfd_path="http://s.codedby.me/bfd/bfd.tar.gz"
+## CONFIG
+
+echo
+echo MyEZinstaller for:
+echo "Awesome Firewall Script (AFS xD)"
+echo "Repo: http://git.splodycode.net"
+echo
+echo
+echo -ne "[*] Checking for conflicting files... "
+if [[ -d /etc/firewall ]]
+then
+	echo /etc/firewall found...
+	bak_dir="/etc/firewall_"`date +"%Y-%m-%d-%T"`
+        mv /etc/firewall $bak_dir
+        mv /etc/init.d/firewall $bak_dir/firewall_init
+        rm -f /usr/sbin/firewall
+        echo "[*] Backup: $bak_dir"
+else
+	echo Done
+fi
+echo -ne "[*] Downloading... "
+cd /root
+wget $afs_path &> /dev/null
+echo Done
+
+echo -ne "[*] Untarring... "
+tar -xzf /root/afs_firewall.tar.gz
+echo Done
+
+echo -ne "[*] Installing configuration files... "
+mv /root/afs_firewall/firewall /etc
+if [[ ! -d /etc/.firewall ]]
+then
+	mv /root/afs_firewall/.firewall /etc
+fi
+mkdir -p /var/log/firewall
+echo Done
+
+echo -ne "[*] Setting up init script... " 
+mv /root/afs_firewall/firewall_init /etc/init.d/firewall
+echo Done
+
+echo -ne "[*] Creating symlinks... "
+ln -s /etc/firewall/firewall /usr/sbin/firewall
+ln -s /etc/.firewall/modules/includes /etc/firewall/includes
+ln -s /etc/.firewall/port-limit /etc/firewall/port-limit
+ln -s /etc/.firewall/ports-in /etc/firewall/ports-in
+ln -s /etc/.firewall/ports-out /etc/firewall/ports-out
+ln -s /etc/.firewall/send-to-devnull /etc/firewall/send-to-devnull
+ln -s /etc/.firewall/smtp-users /etc/firewall/smtp-users
+ln -s /etc/.firewall/whitelist /etc/firewall/whitelist
+ln -s /etc/.firewall/bruted /etc/firewall/bruted
+echo Done
+
+echo -ne "[*] Removing temporary files... "
+rm -fr /root/afs_firewall
+rm -f /root/afs_firewall.tar.gz
+echo Done
+
+echo
+echo Checking for control panel
+if [[ -d /usr/local/cpanel ]]
+then
+	echo cPanel Detected. Using cPanel profile.
+	/etc/firewall/firewall --profile cpanel
+
+	if [[ ! -z `grep "# PassivePortRange          30000 50000" /etc/pure-ftpd.conf` ]]
+	then
+		echo FTP Passive Connections are disabled. Fixing...
+		sed -i 's/# PassivePortRange          30000 50000/PassivePortRange          30000 35000/g' /etc/pure-ftpd.conf
+		/etc/init.d/pure-ftpd restart
+	fi
+else
+	echo No control panel detected. Using default profile.
+	/etc/firewall/firewall --profile default
+fi
+echo Enabling Firewall
+/etc/firewall/firewall restart
+echo
+echo
+echo Install Completed
+echo =========================
+echo Binary path: /usr/sbin/firewall
+echo Init.d script: /etc/init.d/firewall
+echo Configration: /etc/firewall
+echo
+if [[ $1 == "--bfd" ]]
+then
+	echo "[*] --bfd passed. Installing bfd."
+	if [[ -d "/usr/local/bfd" ]]
+	then
+		echo "[!] BFD already exists. Uninstall via /usr/local/bfd/uninstall.sh first."
+		exit 1 ; 
+	fi
+        if [[ ! -d "/usr/local/cpanel" ]]
+        then
+                echo "[!] cPanel not found. This version of BFD is specifically customized for cPanel. Download official BFD package and manually install."
+                exit 1 ;
+        fi
+	echo -ne "[*] Downloading... "
+	cd /root
+	wget $bfd_path &> /dev/null
+	echo Done
+
+	echo -ne "[*] Untarring... "
+	tar -xzf /root/bfd.tar.gz
+	echo Done
+
+	echo "[*] Installing"
+	cd bfd-*
+	bash install.sh
+	echo
+	echo -ne "[*] Updating firewall to use cpanelbfd profile... "
+	/etc/firewall/firewall --profile cpanelbfd
+	echo Done
+fi
