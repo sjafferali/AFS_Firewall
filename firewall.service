@@ -1,0 +1,15 @@
+[Unit]
+Description=AFS Firewall
+After=syslog.target network.target
+Conflicts=firewalld.service
+
+[Service]
+Type=simple
+ExecStop=/etc/firewall/config/system/firewall.init stop
+ExecStart=/etc/firewall/config/system/firewall.init start
+ExecReload=/etc/firewall/firewall --profile reload
+RemainAfterExit=True
+Restart=on-success
+
+[Install]
+WantedBy=multi-user.target
