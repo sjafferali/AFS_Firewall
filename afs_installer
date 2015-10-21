@@ -19,66 +19,66 @@ echo "Awesome Firewall Script (AFS xD)"
 echo "Repo: https://github.com/sjafferali/AFS_Firewall"
 echo
 echo
-echo "[*] Installing pre-reqs"
-yum install git -y
+echo "[*] Installing git"
+yum install git -y | sed "s/^/\t/"
 echo -ne "[*] Checking for conflicting files... "
 if [[ -d /etc/firewall ]]
 then
 	echo /etc/firewall found...
 	bak_dir="/etc/firewall_"`date +"%Y-%m-%d-%T"`
 	echo -ne "[*] Removing firewall... "
-	mv /etc/firewall $bak_dir
-	mv  /etc/init.d/firewall $bak_dir/firewall.init
-	mv /usr/lib/systemd/system/firewall.service $bak_dir
-	systemctl daemon-reload
-        rm -f /usr/sbin/firewall
+	mv -v /etc/firewall $bak_dir | sed "s/^/\t/"
+	mv  -v /etc/init.d/firewall $bak_dir/firewall.init | sed "s/^/\t/"
+	mv -v /usr/lib/systemd/system/firewall.service $bak_dir | sed "s/^/\t/"
+	systemctl daemon-reload | sed "s/^/\t/"
+        rm -fv /usr/sbin/firewall | sed "s/^/\t/"
         echo "[*] Backup: $bak_dir"
 else
 	echo Done
 fi
 echo -ne "[*] Downloading... "
 cd /root
-git clone $AFS_REPO
+git clone $AFS_REPO | sed "s/^/\t/"
 echo Done
 
 echo -ne "[*] Installing configuration files... "
-mv /root/AFS_Firewall/firewall /etc
+mv -v /root/AFS_Firewall/firewall /etc | sed "s/^/\t/"
 if [[ ! -d /etc/.firewall ]]
 then
-	mv /root/AFS_Firewall/.firewall /etc
+	mv -v /root/AFS_Firewall/.firewall /etc | sed "s/^/\t/"
 fi
-mkdir -p /var/log/firewall
+mkdir -pv /var/log/firewall | sed "s/^/\t/"
 echo Done
 
 echo -ne "[*] Setting up init/systemd script... " 
-chmod u+x /etc/firewall/config/system/firewall.init
+chmod -v u+x /etc/firewall/config/system/firewall.init | sed "s/^/\t/"
 if [[ -f /bin/systemctl ]]
 then
-	mv /root/AFS_Firewall/firewall.service /usr/lib/systemd/system/firewall.service
-	systemctl daemon-reload
-	systemctl enable firewall &> /dev/null
-	systemctl stop firewalld
-	systemctl mask firewalld &> /dev/null
-	yum install iptables-services -y &> /dev/null
+	mv -v /root/AFS_Firewall/firewall.service /usr/lib/systemd/system/firewall.service | sed "s/^/\t/"
+	systemctl daemon-reload | sed "s/^/\t/"
+	systemctl enable firewall | sed "s/^/\t/"
+	systemctl stop firewalld | sed "s/^/\t/"
+	systemctl mask firewalld | sed "s/^/\t/"
+	yum install iptables-services -y
 else
-	ln -s /etc/firewall/config/system/firewall.init /etc/init.d/firewall
+	ln -s /etc/firewall/config/system/firewall.init /etc/init.d/firewall | sed "s/^/\t/"
 fi
 echo Done
 
 echo -ne "[*] Creating symlinks... "
-ln -s /etc/firewall/firewall /usr/sbin/firewall
-ln -s /etc/.firewall/modules/includes /etc/firewall/includes
-ln -s /etc/.firewall/port-limit /etc/firewall/port-limit
-ln -s /etc/.firewall/ports-in /etc/firewall/ports-in
-ln -s /etc/.firewall/ports-out /etc/firewall/ports-out
-ln -s /etc/.firewall/send-to-devnull /etc/firewall/send-to-devnull
-ln -s /etc/.firewall/smtp-users /etc/firewall/smtp-users
-ln -s /etc/.firewall/whitelist /etc/firewall/whitelist
-ln -s /etc/.firewall/bruted /etc/firewall/bruted
+ln -s /etc/firewall/firewall /usr/sbin/firewall | sed "s/^/\t/"
+ln -s /etc/.firewall/modules/includes /etc/firewall/includes | sed "s/^/\t/"
+ln -s /etc/.firewall/port-limit /etc/firewall/port-limit | sed "s/^/\t/"
+ln -s /etc/.firewall/ports-in /etc/firewall/ports-in | sed "s/^/\t/"
+ln -s /etc/.firewall/ports-out /etc/firewall/ports-out | sed "s/^/\t/"
+ln -s /etc/.firewall/send-to-devnull /etc/firewall/send-to-devnull | sed "s/^/\t/"
+ln -s /etc/.firewall/smtp-users /etc/firewall/smtp-users | sed "s/^/\t/"
+ln -s /etc/.firewall/whitelist /etc/firewall/whitelist | sed "s/^/\t/"
+ln -s /etc/.firewall/bruted /etc/firewall/bruted | sed "s/^/\t/"
 echo Done
 
 echo -ne "[*] Removing temporary files... "
-rm -fr /root/AFS_Firewall
+rm -frv /root/AFS_Firewall | sed "s/^/\t/"
 echo Done
 
 echo
@@ -86,26 +86,25 @@ echo Checking for control panel
 if [[ -d /usr/local/cpanel ]]
 then
 	echo cPanel Detected. Using cPanel profile.
-	/etc/firewall/firewall --profile cpanel
+	/etc/firewall/firewall --profile cpanel | sed "s/^/\t/"
 
 	if [[ ! -z `grep "# PassivePortRange          30000 50000" /etc/pure-ftpd.conf` ]]
 	then
 		echo FTP Passive Connections are disabled. Fixing...
 		sed -i 's/# PassivePortRange          30000 50000/PassivePortRange          30000 35000/g' /etc/pure-ftpd.conf
-		/etc/init.d/pure-ftpd restart
+		/etc/init.d/pure-ftpd restart | sed "s/^/\t/"
 	fi
 else
 	echo No control panel detected. Using default profile.
-	/etc/firewall/firewall --profile default
+	/etc/firewall/firewall --profile default | sed "s/^/\t/"
 fi
 echo Enabling Firewall
-/etc/firewall/firewall restart
+/etc/firewall/firewall restart | sed "s/^/\t/"
 echo
 echo
 echo Install Completed
 echo =========================
 echo Binary path: /usr/sbin/firewall
-echo Init.d script: /etc/init.d/firewall
 echo Configration: /etc/firewall
 echo
 if [[ $1 == "--bfd" ]]
