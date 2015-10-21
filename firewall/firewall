@@ -24,15 +24,16 @@ firewallo3="$4"
 firewallo4="$5"
 firewallts=`date "+%x %r"`
 
-firewallinit="/etc/init.d/firewall"
 firewallfold="/etc/firewall"
 firewallprod="$firewallfold/config/profiles"
 firewallmodd="$firewallfold/config/modules"
 firewallsyst="$firewallfold/config/system"
+firewallinit="$firewallsyst/firewall.init"
 firewalllogf="/var/log/firewall/firewall.log"
 
 source /etc/.firewall/firewall.conf
 source $firewallsyst/firewall.functions
+source $firewallsyst/systemd.function
 
 ##########################################################
 case "$firewallo0" in
@@ -55,18 +56,19 @@ case "$firewallo0" in
 	;;
 	status)
 		$firewallinit status
+		systemdorinit status
 	;;
 	flush)
 		$firewallinit flush
 	;;
         restart)
-		$firewallinit restart
+		systemdorinit restart
         ;;
         start)
-		$firewallinit start
+		systemdorinit start
         ;;
 	stop)
-		$firewallinit stop
+		systemdorinit stop
 	;;
 	*)
 		echo "[Firewall]"
