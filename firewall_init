@@ -2,12 +2,8 @@
 #############################################################################################################################################################
 ### BEGIN INIT INFO
 # Provides:          Firewall
-# Required-Start:
-# Required-Stop:
-# Should-Start:
-# Should-Stop:
-# Default-Start:
-# Default-Stop:
+# Required-Start: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
 # Short-Description: Firewall
 # Description:       Awesome Firewall Script (AFS xD)
 ### END INIT INFO
@@ -90,6 +86,10 @@ case "$action" in
 	;;
 
 	flush)
+		if [[ -f /bin/systemctl ]]
+		then
+			echo "Warning: Systemd detected. This will effectively disable the firewall, but it will still be marked enabled in systemd. You will need to reload or restart it to re-activate."
+		fi
 		echo '[Firewall] Flushing'
 		iptables -F
 		iptables -X
