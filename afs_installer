@@ -54,7 +54,7 @@ echo -ne "[*] Setting up init/systemd script... "
 chmod u+x /etc/firewall/config/system/firewall.init
 if [[ -f /bin/systemctl ]]
 then
-	mv /root/afs_firewall/firewall.service /usr/lib/systemd/system/firewall.service
+	mv /root/AFS_Firewall/firewall.service /usr/lib/systemd/system/firewall.service
 	systemctl daemon-reload
 	systemctl enable firewall &> /dev/null
 	systemctl stop firewalld
