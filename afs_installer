@@ -49,8 +49,17 @@ fi
 mkdir -p /var/log/firewall
 echo Done
 
-echo -ne "[*] Setting up init script... " 
-mv /root/afs_firewall/firewall_init /etc/init.d/firewall
+echo -ne "[*] Setting up init/systemd script... " 
+chmod u+x /etc/firewall/config/system/firewall.init
+if [[ -f /bin/systemctl ]]
+then
+	mv /root/afs_firewall/firewall.service /usr/lib/systemd/system/firewall.service
+	systemctl daemon-reload
+	systemctl stop firewalld
+	systemctl mask firewalld
+else
+	ln -s /etc/firewall/config/system/firewall.init /etc/init.d/firewall
+fi
 echo Done
 
 echo -ne "[*] Creating symlinks... "
