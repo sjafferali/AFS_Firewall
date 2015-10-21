@@ -19,6 +19,7 @@ echo "Awesome Firewall Script (AFS xD)"
 echo "Repo: https://github.com/sjafferali/AFS_Firewall"
 echo
 echo
+echo "[*] Installing pre-reqs"
 yum install git -y
 echo -ne "[*] Checking for conflicting files... "
 if [[ -d /etc/firewall ]]
@@ -37,7 +38,7 @@ else
 fi
 echo -ne "[*] Downloading... "
 cd /root
-git clone $REPO
+git clone $AFS_REPO
 echo Done
 
 echo -ne "[*] Installing configuration files... "
