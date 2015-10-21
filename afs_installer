@@ -55,6 +55,7 @@ if [[ -f /bin/systemctl ]]
 then
 	mv /root/afs_firewall/firewall.service /usr/lib/systemd/system/firewall.service
 	systemctl daemon-reload
+	systemctl enable firewall &> /dev/null
 	systemctl stop firewalld
 	systemctl mask firewalld &> /dev/null
 	yum install iptables-services -y &> /dev/null
