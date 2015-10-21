@@ -1,0 +1,141 @@
+#!/bin/bash
+
+function usage ()
+{
+	echo
+	echo 'firewall [ function/action ] [ options ]'
+	echo ; echo -e '***Options***' ; echo
+        echo -e "\t firewall --bfd brute [ip] [reason] ( Used primarily by the bfd module )"
+	echo -e "\t firewall --profile [profile] ( load firewall profile )"
+	echo -e "\t firewall --blacklist ban [ip] ( ban IP )"
+	echo -e "\t firewall --whitelist [ip] ( whitelist IP )"
+	echo
+	echo -e "\t firewall check ( show firewall rules )"
+        echo -e "\t firewall status ( check firewall status )"
+        echo -e "\t firewall flush ( flush firewall rules )"
+	echo -e "\t firewall restart ( restart firewall )"
+	echo -e "\t firewall start ( start firewall )"
+	echo -e "\t firewall stop ( stop firewall )"
+}
+
+function function_profile ()
+{
+	if [ -z $1 ]
+	then
+		echo "***usage: firewall --profile profile"
+		echo "***usage: possible profiles:"
+
+		ls /etc/firewall/config/profiles/ | awk '{print $1}'
+		echo -e "\tcurrent) $(cat $firewallsyst/firewall.current | grep -v ^$)"
+		exit 0
+	fi
+
+	firecurrent=`cat $firewallsyst/firewall.current | grep -v ^$`
+
+	if [ -z $firecurrent ]
+	then
+		firecurrent="default"
+	fi
+
+	case $1 in
+		last)
+			echo "Firewall : [$firewallts] : [Mode] Waiting ..." >> $firewalllogf
+			sleep 94s
+			source $firewallprod/profile.$firecurrent
+			echo "Firewall : [$firewallts] : [Mode] Loading previously running profile \"$firecurrent\"" >> $firewalllogf
+		;;
+
+		reload)
+			source $firewallprod/profile.$firecurrent
+			echo "Firewall : [$firewallts] : [Mode] Reloading previous profile \"$firecurrent\"" >> $firewalllogf
+		;;
+
+		*)
+			if $(find $firewallprod/ -type f | grep -q $1)
+			then
+				source $firewallprod/profile.$1
+			else
+				echo "***Bad profile***"
+				/usr/sbin/firewall --profile
+			fi
+		;;
+	esac
+}
+
+function function_blacklist ()
+{
+	if [ -z $1 ]
+	then
+		echo "***usage: firewall --blacklist ban [ip]"
+		exit
+	fi
+
+	case "$1" in
+		ban)
+			echo "Firewall : [$firewallts] : [Action] Banning IP '$2'" >> $firewalllogf
+			echo "$2" >> $firewallfold/send-to-devnull
+			/usr/sbin/firewall --profile reload
+			echo "Firewall : [$firewallts] : [Status] Oh-kay I reloh'ded ..." >> $firewalllogf
+		;;
+		*)
+			echo "***check syntax***"
+			echo "***usage: firewall --blacklist ban [IP]"
+		;;
+	esac
+}
+
+function function_brute ()
+{
+	bfd_limit=50
+        if [ -z $1 ]
+        then
+                echo "***usage: firewall --bfd brute [ip] [reason]"
+                exit
+        fi
+
+        case "$1" in
+                brute)
+			if [[ -z $3 ]]
+			then
+	                        echo "***check syntax***"
+			else
+				if [[ `cat $firewallfold/bruted | egrep -v '^#' | wc -l` -ge $bfd_limit ]]
+				then
+					line_removing=`cat $firewallfold/bruted | egrep -v '^#' | head -1`
+					echo "Firewall : [$firewallts] : [Action] Removing bruted IP: $line_removing" >> $firewalllogf
+					sed -i "/$line_removing/d" /etc/.firewall/bruted
+				fi	
+                                if [[ -z `grep $2 $firewallfold/bruted` ]]
+                                then
+                                        echo "Firewall : [$firewallts] : [Action] Bruting IP '$2' for '$3'" >> $firewalllogf
+                                        echo "$2:$3" >> $firewallfold/bruted
+                                        /usr/sbin/firewall --profile reload
+                                        echo "Firewall : [$firewallts] : [Status] Oh-kay I reloh'ded ..." >> $firewalllogf
+                                else
+                                        echo "Firewall : [$firewallts] : [Action] '$2' Already bruted" >> $firewalllogf
+                                        /usr/sbin/firewall --profile reload
+                                        echo "Firewall : [$firewallts] : [Status] Oh-kay I reloh'ded ..." >> $firewalllogf
+                                fi
+			fi
+                ;;
+                *)
+                        echo "***check syntax***"
+                        echo "***usage: firewall --bfd brute [ip] [reason]"
+                ;;
+        esac
+
+
+
+}
+
+function function_whitelist ()
+{
+	if [ -z $1 ]
+	then
+		echo "***usage: firewall --whitelist [IP]"
+		exit
+	fi
+
+	echo "$1" >> $firewallfold/whitelist
+	/usr/sbin/firewall --profile reload
+}

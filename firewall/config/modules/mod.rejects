@@ -1,0 +1,10 @@
+#########################
+# Rejects
+#########################
+#
+# Reject any packets that do not meet the specified criteria
+#
+
+$firewall -A INPUT -j DROP
+$firewall -A FORWARD -j DROP
+$firewall -A OUTPUT -j DROP

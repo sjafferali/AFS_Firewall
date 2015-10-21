@@ -1,0 +1,11 @@
+#############################
+# Port Based Connection Limit
+#############################
+
+if [[ ! -z `egrep -v "^#" /etc/firewall/port-limit` ]]
+then
+	for i in `egrep -v "^#" /etc/firewall/port-limit`
+	do
+		$firewall -I INPUT -p tcp --syn --dport `echo $i | cut -d: -f1` -m connlimit --connlimit-above `echo $i | cut -d: -f2` -j REJECT
+	done
+fi

@@ -1,0 +1,12 @@
+#########################
+# Servics INPUT
+#########################
+#
+# SSH
+$firewall -A INPUT -p tcp -m tcp --dport $portSsh -j ACCEPT
+# HTTP
+$firewall -A INPUT -p tcp -m tcp --dport $portHttp -j ACCEPT
+# Outbound DNS Lookups
+$firewall -A OUTPUT -p udp --dport $portDns -j ACCEPT
+# Outbound WHOIS Lookups
+$firewall -A OUTPUT -p tcp --dport $portWhois -j ACCEPT

@@ -1,0 +1,13 @@
+#########################
+# Ports in
+#########################
+
+if ! [ $(cat /etc/firewall/ports-in | wc -l) == '0' ]
+then
+	for i in `cat /etc/firewall/ports-in`
+	do
+        	$firewall -A INPUT -p tcp --destination-port $i -j ACCEPT
+        	$firewall -A INPUT -p udp --destination-port $i -j ACCEPT
+	done
+fi
+

@@ -1,0 +1,29 @@
+#########################
+# Common cPanel Ports
+#########################
+#
+#
+#
+
+tcp_in="20 21 25 26 53 80 110 143 443 465 587 993 995 2077 2078 2082 2083 2086 2087 2095 2096 3306 30000:35000"
+tcp_out="20 21 37 43 53 80 110 113 443 873 2086 2087 2089 2703"
+udp_in="20 21 53"
+udp_out="20 21 53 113 123 873 6277 33434:33523"
+
+$firewall -A INPUT -p tcp --destination-port $portSsh -j ACCEPT
+for i in $tcp_in
+do
+	$firewall -A INPUT -p tcp --destination-port $i -j ACCEPT
+done
+for i in $udp_in
+do
+	$firewall -A INPUT -p udp --destination-port $i -j ACCEPT
+done
+for i in $tcp_out
+do
+	$firewall -A OUTPUT -p tcp --dport $i -j ACCEPT
+done
+for i in $udp_out
+do
+        $firewall -A OUTPUT -p udp --dport $i -j ACCEPT
+done

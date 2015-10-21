@@ -1,0 +1,20 @@
+#########################
+# Default
+#########################
+
+$firewall -P INPUT ACCEPT
+$firewall -F
+
+$firewall -A INPUT -i lo -j ACCEPT
+$firewall -A FORWARD -i lo -j ACCEPT
+$firewall -A OUTPUT -o lo -j ACCEPT
+
+$firewall -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+$firewall -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+$firewall -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+#$firewall -P INPUT DROP
+#$firewall -P FORWARD DROP
+#$firewall -P OUTPUT DROP
+
+#source /etc/firewall/config/modules/mod.includes

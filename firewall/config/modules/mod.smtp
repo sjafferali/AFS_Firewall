@@ -1,0 +1,34 @@
+#########################
+# SMTP Whitelist
+#########################
+
+smtp_ports="25 26 465 587"
+o_groups="mail mailman"
+o_users="cpanel"
+
+for t_group in $o_groups
+do
+	for s_port in $smtp_ports
+	do
+		$firewall -I OUTPUT -p tcp --dport $s_port -m owner --gid-owner $t_group -j ACCEPT
+	done
+done
+
+for t_user in $o_users
+do
+        for s_port in $smtp_ports
+        do
+                $firewall -I OUTPUT -p tcp --dport $s_port -m owner --uid-owner $t_user -j ACCEPT
+        done
+done
+
+if ! [ $(cat /etc/firewall/smtp-users | wc -l) == '0' ]
+then
+	for s_port in $smtp_ports
+	do
+		for i in `cat /etc/firewall/smtp-users`
+		do
+			$firewall -I OUTPUT -p tcp --dport $s_port -m owner --uid-owner $i -j ACCEPT
+		done
+	done
+fi

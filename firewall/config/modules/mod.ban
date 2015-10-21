@@ -1,0 +1,13 @@
+#########################
+# Ban
+#########################
+
+for i in `cat /etc/firewall/send-to-devnull | grep -v '\#'`
+do
+	if ! route -nv | grep -q $i
+	then
+		ip route add prohibit $i
+	fi
+
+	$firewall -A INPUT -p tcp -s $i -m comment --comment "Should be dropped in *routes* .. " -j REJECT
+done

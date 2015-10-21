@@ -1,0 +1,108 @@
+#!/bin/bash
+#############################################################################################################################################################
+### BEGIN INIT INFO
+# Provides:          Firewall
+# Required-Start:
+# Required-Stop:
+# Should-Start:
+# Should-Stop:
+# Default-Start:
+# Default-Stop:
+# Short-Description: Firewall
+# Description:       Awesome Firewall Script (AFS xD)
+### END INIT INFO
+#############################################################################################################################################################
+function time_check()
+{
+	dateCurrent=$(date +%s)
+	case "$1" in
+	current) echo "$dateCurrent.$dateCurrent" ;;
+	new) echo "$dateCurrent.$(date +%s)" ;;
+	esac
+}
+#############################################################################################################################################################
+
+source /etc/rc.d/init.d/functions
+action="$1"
+firewall="/sbin/iptables"
+status=`if $(/sbin/iptables -nL | egrep -qv 'Chain|target|^$');then echo "on";else echo "off";fi`
+
+case "$action" in
+	start)
+		if [ $status == "on" ];then
+			echo -ne "Firewall: [Status] Already running."
+			failure
+			echo
+		else
+			echo "|$(time_check current)| Firewall: [Status] Starting ..."
+			/etc/firewall/firewall --profile reload
+                        echo -ne "|$(time_check new)| Firewall: [Status] Started."
+		        success
+			echo
+		fi
+	;;
+
+	stop)
+		if [ $status == "off" ];then
+			echo -ne "|$(time_check current)| Firewall: [Status] Not running."
+			failure
+			echo
+		else
+			echo "|$(time_check current)| Firewall: [Status] Stopping ..."
+			$firewall -F
+			$firewall -P INPUT ACCEPT
+			$firewall -P FORWARD ACCEPT
+			$firewall -P OUTPUT ACCEPT
+			echo -ne "|$(time_check new)| Firewall: [Status] Stopped."
+                        success
+                        echo
+		fi
+	;;
+
+	status)
+		if [ $status == "on" ];then
+			echo "|$(time_check current)| Firewall: [Status] Running ..."
+		else
+			echo "|$(time_check current)| Firewall: [Status] Not running ..."
+		fi
+	;;
+
+	restart)
+		echo "|$(time_check current)| Firewall: [Status] Stopping ..."
+		$firewall -F
+		$firewall -P INPUT ACCEPT
+		$firewall -P FORWARD ACCEPT
+		$firewall -P OUTPUT ACCEPT
+                echo -ne "|$(time_check new)| Firewall: [Status] Stopped."
+		success
+		echo
+		echo "|$(time_check new)| Firewall: [Status] Starting ..."
+		/etc/firewall/firewall --profile reload
+                echo -ne "|$(time_check new)| Firewall: [Status] Started."
+		success
+		echo
+	;;
+
+	check)
+		echo "|$(time_check current)| Firewall: [Status] Current Rules ***"
+		$firewall -nL -v --line-numbers
+		echo "|$(time_check new)| Firewall: [Status] Current Rules ***"
+	;;
+
+	flush)
+		echo '[Firewall] Flushing'
+		iptables -F
+		iptables -X
+		iptables -t nat -F
+		iptables -t nat -X
+		iptables -t mangle -F
+		iptables -t mangle -X
+		iptables -P INPUT ACCEPT
+		iptables -P FORWARD ACCEPT
+		iptables -P OUTPUT ACCEPT
+		echo '[Firewall] ... Done'
+	;;
+
+        *)
+		echo $"Usage: $0 {start|stop|restart|status|check|flush}"
+esac

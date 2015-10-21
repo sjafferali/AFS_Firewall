@@ -1,0 +1,9 @@
+#########################
+# Whitelist
+#########################
+
+for i in `cat /etc/firewall/whitelist`
+do
+	$firewall -A INPUT -s $i -j ACCEPT
+	$firewall -A OUTPUT -d $i -j ACCEPT
+done

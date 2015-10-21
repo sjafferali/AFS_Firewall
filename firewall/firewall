@@ -1,0 +1,78 @@
+#!/bin/bash
+#############################################################################################################################################################
+# Firewall Script
+#############################################################################################################################################################
+#
+# Requirements
+# base: iptables
+#
+# Splodycode.net
+# merv@splodycode.et
+# Repo: http://git.splodycode.net
+#
+#############################################################################################################################################################
+# Set Variables
+#############################################################################################################################################################
+firewall="/sbin/iptables"
+
+firewallip=`ip addr | grep -w inet | grep eth | head -n 1 | awk '{print $2}' | cut -d '/' -f 1`
+
+firewallo0="$1"
+firewallo1="$2"
+firewallo2="$3"
+firewallo3="$4"
+firewallo4="$5"
+firewallts=`date "+%x %r"`
+
+firewallinit="/etc/init.d/firewall"
+firewallfold="/etc/firewall"
+firewallprod="$firewallfold/config/profiles"
+firewallmodd="$firewallfold/config/modules"
+firewallsyst="$firewallfold/config/system"
+firewalllogf="/var/log/firewall/firewall.log"
+
+source /etc/.firewall/firewall.conf
+source $firewallsyst/firewall.functions
+
+##########################################################
+case "$firewallo0" in
+##########################################################
+	--profile)
+		function_profile $firewallo1
+	;;
+        --bfd)
+                function_brute $firewallo1 $firewallo2 $firewallo3 $firewallo4
+	;;
+	--blacklist)
+		function_blacklist $firewallo1 $firewallo2 $firewallo3 $firewallo4
+	;;
+	--whitelist)
+		function_whitelist $firewallo1
+	;;
+##########################################################
+	check)
+		$firewallinit check
+	;;
+	status)
+		$firewallinit status
+	;;
+	flush)
+		$firewallinit flush
+	;;
+        restart)
+		$firewallinit restart
+        ;;
+        start)
+		$firewallinit start
+        ;;
+	stop)
+		$firewallinit stop
+	;;
+	*)
+		echo "[Firewall]"
+		usage
+		exit 0
+	;;
+##########################################################
+esac
+##########################################################

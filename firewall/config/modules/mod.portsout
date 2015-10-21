@@ -1,0 +1,12 @@
+#########################
+# Ports out
+#########################
+
+if ! [ $(cat /etc/firewall/ports-out | wc -l) == '0' ]
+then
+	for i in `cat /etc/firewall/ports-out`;
+	do
+        	$firewall -A OUTPUT -p tcp --dport $i -j ACCEPT
+		$firewall -A OUTPUT -p udp --dport $i -j ACCEPT
+	done
+fi

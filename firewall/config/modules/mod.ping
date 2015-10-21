@@ -1,0 +1,6 @@
+#########################
+# Ping
+#########################
+
+$firewall -A INPUT -p icmp -j ACCEPT
+$firewall -A OUTPUT -p icmp -j ACCEPT

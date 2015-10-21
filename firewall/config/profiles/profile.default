@@ -1,0 +1,10 @@
+echo "Firewall : [$firewallts] : [Mode] Switching from $firecurrent to \"Default\" mode" >> $firewalllogf
+
+requiredmods="default whitelist ban ping services portsin portsout logging rejects"
+
+for i in $requiredmods
+do
+	source $firewallmodd/mod.$i
+done
+
+echo "default" > $firewallsyst/firewall.current

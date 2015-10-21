@@ -1,0 +1,8 @@
+#########################
+# INCLUDES
+#########################
+
+for i in `ls -A /etc/firewall/config/modules/includes`
+do
+        source /etc/firewall/config/modules/includes/$i
+done

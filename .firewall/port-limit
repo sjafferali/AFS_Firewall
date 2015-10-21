@@ -1,0 +1,8 @@
+# Limit connections per port
+#
+# Format:
+# port:limit
+#
+# Example limiting port 80 (HTTP) to 20 connections per IP/Host
+# 80:20
+#

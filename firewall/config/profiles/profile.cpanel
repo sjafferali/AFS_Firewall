@@ -1,0 +1,10 @@
+echo "Firewall : [$firewallts] : [Mode] Switching from $firecurrent to \"Default\" mode" >> $firewalllogf
+
+requiredmods="default whitelist portlimit cpanel smtp ban ping portsin portsout logging rejects"
+
+for i in $requiredmods
+do
+	source $firewallmodd/mod.$i
+done
+
+echo "cpanel" > $firewallsyst/firewall.current

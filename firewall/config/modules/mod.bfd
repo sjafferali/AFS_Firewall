@@ -1,0 +1,13 @@
+#########################
+# BFD
+#########################
+
+cat /etc/firewall/bruted | egrep -v "^#" | while read line
+do
+
+blocking_ip=`echo $line | awk -F: '{print$1}'`
+reason_blocking=`echo $line | awk -F: '{print$2}'`
+
+	$firewall -A INPUT -p tcp -s $blocking_ip -j LOG -m limit --limit 10/minute --log-level notice --log-prefix "$reason_blocking "
+	$firewall -A INPUT -p tcp -s $blocking_ip -m comment --comment "$reason_blocking" -j REJECT 
+done

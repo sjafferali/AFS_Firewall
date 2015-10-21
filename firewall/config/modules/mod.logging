@@ -1,0 +1,7 @@
+#########################
+# Logging
+#########################
+
+$firewall -A INPUT -j LOG --log-level 7 --log-prefix "Dropped by firewall.io [I]: "
+$firewall -A FORWARD -j LOG --log-level 7 --log-prefix "Dropped by firewall.io [F]: "
+$firewall -A OUTPUT -j LOG --log-level 7 --log-prefix "Dropped by firewall.io [O]: "
