@@ -2,12 +2,20 @@
 # Servics INPUT
 #########################
 #
+
 # SSH
 $firewall -A INPUT -p tcp -m tcp --dport $portSsh -j ACCEPT
+
 # Ntpd
-$firewall -A INPUT -p tcp -m udp --dport 123 -j ACCEPT
-$firewall -A OUTPUT -p tcp -m udp --dport 123 -j ACCEPT
+$firewall -A INPUT -p udp --dport 123 -j ACCEPT
+$firewall -A OUTPUT -p udp --dport 123 -j ACCEPT
+
 # Outbound DNS Lookups
 $firewall -A OUTPUT -p udp --dport $portDns -j ACCEPT
+
 # Outbound WHOIS Lookups
 $firewall -A OUTPUT -p tcp --dport $portWhois -j ACCEPT
+
+# Salt minions
+$firewall -A OUTPUT -p tcp --dport 4505 -j ACCEPT
+$firewall -A OUTPUT -p tcp --dport 4506 -j ACCEPT
