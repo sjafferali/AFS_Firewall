@@ -61,6 +61,7 @@ else
 fi
 
 echo -e "[*] Creating symlinks... "
+mkdir -pv /etc/.firewall/modules/includes | sed "s/^/\t/"
 ln -s /etc/firewall/firewall /usr/sbin/firewall | sed "s/^/\t/"
 ln -s /etc/.firewall/modules/includes /etc/firewall/includes | sed "s/^/\t/"
 ln -s /etc/.firewall/port-limit /etc/firewall/port-limit | sed "s/^/\t/"
